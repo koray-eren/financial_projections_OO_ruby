@@ -18,12 +18,10 @@ file.close
 
 file = File.read("assets.json")
 
-data = JSON.parse(file)
-
-testAsset2 = Asset.from_json(data)
+testAsset2 = Asset.from_json(file)
 p testAsset2
 
-puts "\n\n++++++++++++++++++++++++"
+puts "\n++++++++++++++++++++++++"
 puts testAsset2.future_value(0)
 puts testAsset2.future_value(1)
 

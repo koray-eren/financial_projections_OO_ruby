@@ -11,11 +11,20 @@ Develop a statement of purpose and scope for your application. It must include:
 
 * This application aims to facilitate more informed financial decisions on the part of the user.
 * The user can see the long term impact of their current financial position, as well as explore the potential impact of various changes.
+* The hope is that this application may offer value to all users regardless of their level of financial literacy.
+
 * The application allows the user to enter financial inputs, and project forward these inputs an arbitrary number of years.
 * The user can add customisable income, expenses, assets, and liabilities.
 * The user can adjust assumptions such as indexation, projection length, and tax rate.
-* The hope is that this application may offer value to all users regardless of their level of financial literacy.
 * The customisability of the app also facilitates 'what if' modelling, whereby the user can explore the impact of unexpected financial conditions to their position, particularly negative ones. For example, what if a given investment experiences a lower than expected return, or the user were to lose their income, or interest rates were to increase?
+
+* There are two main sections to the app - managing inputs & viewing outputs (as well as one or two auxiliary features)
+* The user enters their desired inputs, and can view the output derived from them
+* Inputs: assets, income, expenses, liabilities
+* Outputs: cashflow table, assets & liabilities table
+
+* wish list: graphs and charts, 
+
 * Both projecting forward their current financial position, and exploring various hypothetical scenarios can help a user answer various important financial questions such as:
   * When can I retire?
   * Which investment attributes are better over the long term?

@@ -22,7 +22,8 @@ class Asset
             'income_rate' => @income_rate }.to_json
     end
 
-    def self.from_json(hash)
+    def self.from_json(json_file_path)
+        hash = JSON.parse(json_file_path)
         self.new(hash['value'], hash['start_year'], hash['end_year'], hash['growth_rate'], hash['income_rate'] )
     end
 
