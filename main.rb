@@ -2,35 +2,32 @@ require_relative("Asset")
 require_relative("Assumptions")
 require_relative("ObjectStorage")
 require("json")
+require("tty-prompt")
 
-# objects = ObjectStorage.new
+system("clear")
+test_asset = Asset.new("test", 10, 1, 10, 0.05, 0.05)
 
-test_asset = Asset.new(10, 1, 10, 0.05, 0.05)
+prompt = TTY::Prompt.new
+exit = false
 
-# loan = Liability.new(10, 1, 10, 0.03, false)
-# asset2 = Asset.new(10, 1, 10, 0.05, 0.05, loan, objects)
+prompt.on(:keyescape) do |event|
+    exit!
+end
 
-#seperate file for each type (asset, liabilities, income, expenses)
-file = File.open("assets.json", "w")
+name = prompt.ask("Name:")
 
-file.write(test_asset.to_json)
-file.close
+value = prompt.ask("Value:") do |q|
+    q.validate(/\d/, "Invalid value: %{value}, must be a number")
+end
 
-file = File.read("assets.json")
+first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
+last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
 
-testAsset2 = Asset.from_json(file)
-p testAsset2
 
-puts "\n++++++++++++++++++++++++"
-puts testAsset2.future_value(0)
-puts testAsset2.future_value(1)
+# file = File.open("assets.json", "w")
+# file.write(test_asset.to_json)
+# file.close
 
-# system("clear")
-# puts test_asset.future_value(1)
-# puts test_asset.liability.print_loan_interest
-# puts asset2.liability.print_loan_interest
-
-# puts objects.getAssets
-# puts "loan start year: #{loan.start_year}"
-# loan.start_year = 2
-# puts "changed loan start year: #{loan.start_year}"
+# file = File.read("assets.json")
+# testAsset2 = Asset.from_json(file)
+# p testAsset2
