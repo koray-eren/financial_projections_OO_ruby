@@ -9,6 +9,9 @@ class Liability
         @principal_repayments = principal_repayments
     end
 
+    # should destruct when balance is 0 (no redraw supported)
+    # doesn't need end date
+
     def print_loan_interest
         @value * @interest_rate
     end

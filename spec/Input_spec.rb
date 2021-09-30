@@ -1,7 +1,7 @@
 require "../Input"
 require "../Assumptions"
 
-describe Input do
+describe "Input" do
     name = "name"
     value = 1000
     first_year = 2
@@ -13,9 +13,6 @@ describe Input do
     
     it "should initialise first_year to the specified value" do
         expect(@input.name).to eq(name)
-        ∂
-        expect(@input.first_year).to eq(first_year)
-        expect(@input.last_year).to eq(last_year)
     end
     
     it "should initialise value attribute to the specified value" do

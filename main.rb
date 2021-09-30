@@ -21,6 +21,7 @@ value = prompt.ask("Value:") do |q|
 end
 
 first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
+# change to sale year for asset
 last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
 
 

@@ -1,5 +1,5 @@
 class Input
-    attr_accessor :name, :value, :first_year, :last_year
+    attr_reader :name, :value, :first_year, :last_year
 
     def initialize(name, value, first_year, last_year=Assumptions.years)
         @name = name

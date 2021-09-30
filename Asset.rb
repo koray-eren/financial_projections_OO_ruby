@@ -1,15 +1,29 @@
 require_relative("Input")
 
 class Asset < Input
-    # attr_accessor
-    def initialize(name, value, first_year, last_year, growth_rate, income_rate)
-        super(name, value, first_year, last_year)
+    attr_reader :growth_rate, :income_rate, :sale_year
+    def initialize(name, value, first_year, growth_rate, income_rate, sale_year = nil)
+        super(name, value, first_year)
         @growth_rate = growth_rate
         @income_rate = income_rate
+        @sale_year = sale_year
     end
 
-    def future_value(year)
-        @value * (1 + @growth_rate) ** year
+    def future_value(year)        
+        # if year is outside the range where the asset exists
+        if year < @first_year || (sale_year != nil && year >= sale_year)
+            return 0
+        # if asset is purchased in a future year
+        elsif @first_year > 1
+            indexed_value = @value * (1 + Assumptions.indexation) ** (@first_year - 1)
+            indexed_value * (1 + @growth_rate) ** (year - first_year)
+        else
+            @value * (1 + @growth_rate) ** (year - 1)
+        end
+    end
+
+    def year_n_income(year)
+        future_value(year) * income_rate
     end
     
     def to_json
