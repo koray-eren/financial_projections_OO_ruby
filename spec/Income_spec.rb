@@ -20,6 +20,11 @@ describe "intialization" do
         expect(@income.taxable).to eq(taxable)
     end
 
+    it "should initialise taxable to true if not specified" do
+        @income2 = Income.new(name, value, first_year, last_year)
+        expect(@income2.taxable).to eq(true)
+    end
+
 end
 
 #taxable_income(year) method
