@@ -35,8 +35,13 @@ describe "taxable income method" do
             @income = Income.new(name, value, first_year, last_year, taxable = true)
         end
         
-        it "should return 0 for a valid year for a non-taxable income" do
-            expect(@income.taxable).to eq(true)
+        it "should return indexed income amount for a valid year" do
+            year = 3
+            expect(@income.taxable_income(year) ).to eq(@income.future_value(year))
+        end
+
+        it "should return indexed income amount for a valid year" do
+            expect(@income.taxable_income(2) ).to eq(0)
         end
     end
 
@@ -45,8 +50,12 @@ describe "taxable income method" do
             @income = Income.new(name, value, first_year, last_year, taxable = false)
         end
         
-        it "should return 0 for a valid year for a non-taxable income" do
-            expect(@income.taxable).to eq(false)
+        it "should return 0 for a valid year" do
+            expect(@income.taxable_income(3)).to eq(0)
+        end
+
+        it "should return 0 for a non-valid year" do
+            expect(@income.taxable_income(1)).to eq(0)
         end
     end
 

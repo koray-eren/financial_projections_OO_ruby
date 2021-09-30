@@ -13,8 +13,7 @@ class Income < Cashflow
     end
 
     def taxable_income(year)
-        
+        @taxable ? future_value(year) : 0
     end
-    # taxable_income(year)
 
 end
