@@ -13,19 +13,31 @@ def manage_inputs
     input_menu_exit = false
     while !input_menu_exit
         system("clear")
-        choices = {"Add Input" => 1, "Remove Inputs" => 2, "View Inputs" => 3, "Back" => 4}
-        menu_selection = prompt.select("What would you like to do?", choices)
+        choices = {"Assets" => 1, "Liabilities" => 2, "Income" => 3, "Expenses" => 4, "Back" => 5}
+        menu_selection = prompt.select("Select a category", choices)
 
         #ALTERNATIVELY, JUST DISPLAY ALL CURRENT INPUTS, AND THEN CHOOSE TO ADD NEW, EDIT, OR REMOVE
 
         case menu_selection
+        #EDIT CAN JUST BE ENTER REMOVE + NEW COMBINED - I.E. YOU HAVE TO EDIT THE WHOLE THING, BUT SAVES YOU FROM CLICKING TWO OPTIONS
         when 1
-            # add input
+            # assets
+            # display all
+            # select: add, remove, (edit), back
+            objects.print_assets
         when 2
-            # remove input
+            # liab
+            # display all
+            # select: add, remove, (edit), back
         when 3
-            # assets & liabilities table
+            # income
+            # display all
+            # select: add, remove, (edit), back
         when 4
+            # expense
+            # display all
+            # select: add, remove, (edit), back
+        when 5
             input_menu_exit = true
         end
     end
@@ -66,6 +78,7 @@ test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
 objects.store(test_loan2)
 puts objects.print_assets
 puts objects.print_liabilities
+puts objects.print_income
 
 exit = false
 

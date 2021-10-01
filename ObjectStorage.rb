@@ -28,26 +28,33 @@ class ObjectStorage
     
     def print_inputs(array, header)
         rows = []
+        i = 1
         for item in array do
-            rows << item.to_array
+            rows << item.to_array.unshift(i)
+            i += 1
         end
         table = TTY::Table.new(header, rows)
         puts table.render(:unicode, alignment: [:center], padding: [0,1] )
     end
 
     def print_assets
-        header = ["Name", "Value", "First Year", "Growth Rate", "Income Rate", "Sale Year"]
+        header = ["No.", "Name", "Value", "First Year", "Growth Rate", "Income Rate", "Sale Year"]
         print_inputs(@assets, header)
     end
 
     def print_liabilities
-        header = ["Name", "Value", "First Year", "Interest Rate", "Deductible", "Principal Repayments"]
+        header = ["No.", "Name", "Value", "First Year", "Interest Rate", "Deductible", "Principal Repayments"]
         print_inputs(@liabilities, header)
     end
 
-    def print_liabilities
-        header = ["Name", "Value", "First Year", "Interest Rate", "Deductible", "Principal Repayments"]
-        print_inputs(@liabilities, header)
+    def print_income
+        header = ["No.", "Name", "Value", "First Year", "Last Year", "Taxable"]
+        print_inputs(@income, header)
+    end
+    
+    def print_expenses
+        header = ["No.", "Name", "Value", "First Year", "Last Year", "Deductible"]
+        print_inputs(@expenses, header)
     end
 
 end
