@@ -22,6 +22,7 @@ end
 
 first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
 # change to sale year for asset
+# for loan, start year 0 == existing loan, otherwise will be added to income
 last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
 
 

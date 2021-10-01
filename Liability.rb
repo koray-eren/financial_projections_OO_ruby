@@ -1,23 +1,29 @@
-class Liability
+class Liability < Input
     # do i want all of these accessible? probs not
-    attr_accessor :value, :first_year, :last_year, :interest_rate, :deductible
+    attr_reader :interest_rate, :deductible, :principal_repayments
     
-    def initialize(name, value, first_year, last_year, interest_rate, deductible = true, principal_repayments = 0)
-        super
+    def initialize(name, value, first_year, interest_rate, deductible = false, principal_repayments = 0)
+        super(name, value, first_year)
         @interest_rate = interest_rate
         @deductible = deductible
         @principal_repayments = principal_repayments
     end
 
-    # should destruct when balance is 0 (no redraw supported)
-    # doesn't need end date
-
-    def print_loan_interest
-        @value * @interest_rate
+    def interest_payable(year)
+        future_value(year) * @interest_rate
     end
 
-    def future_balance(year)
-        
-        # future value = value - (years_that_have_passed * principal_repayments)
+    def future_value(year)
+        if first_year > 1
+            commencement_value = @value * (1 + Assumptions.indexation) ** (@first_year - 1)
+        else
+            commencement_value = @value
+        end
+        future_value = commencement_value - ((year - @first_year) * @principal_repayments)
+        future_value < 0? 0 : future_value
+    end
+
+    def principal_repayment(year)
+        future_value(year) == 0 ? 0 : (future_value(year) > principal_repayments ? principal_repayments : future_value(year) )
     end
 end
