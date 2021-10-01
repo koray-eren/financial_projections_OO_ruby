@@ -50,6 +50,16 @@ while !main_menu_exit
 end
 
 test_asset = Asset.new("test", 10, 1, 10, 0.05, 0.05)
+objects = ObjectStorage.new
+
+objects.store(test_asset)
+
+puts "TEST ASSET"
+puts objects.assets[0].name
+puts objects.assets[0].future_value(1)
+puts objects.assets[0].future_value(2)
+puts objects.assets[0].future_value(3)
+puts "\n"
 
 exit = false
 
