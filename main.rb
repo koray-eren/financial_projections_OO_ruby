@@ -1,10 +1,12 @@
 require_relative("Asset")
+require_relative("Liability")
 require_relative("Assumptions")
 require_relative("ObjectStorage")
 require("json")
 require("tty-prompt")
 
 prompt = TTY::Prompt.new
+objects = ObjectStorage.new
 
 def manage_inputs
     prompt = TTY::Prompt.new
@@ -49,17 +51,21 @@ while !main_menu_exit
     end
 end
 
-test_asset = Asset.new("test", 10, 1, 10, 0.05, 0.05)
-objects = ObjectStorage.new
-
+# name, value, first_year, growth_rate, income_rate, sale_year
+# need to add handling for first_year = 0 for inputs
+test_asset = Asset.new("test", 100, 0, 0.05, 0.05)
 objects.store(test_asset)
 
-puts "TEST ASSET"
-puts objects.assets[0].name
-puts objects.assets[0].future_value(1)
-puts objects.assets[0].future_value(2)
-puts objects.assets[0].future_value(3)
-puts "\n"
+test_asset2 = Asset.new("test2", 100, 0, 0.05, 0.05)
+objects.store(test_asset2)
+
+# name, value, first_year, interest_rate, deductible = false, principal_repayments = 0
+test_loan = Liability.new("loan1", 1000, 1, 0.03)
+objects.store(test_loan)
+test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
+objects.store(test_loan2)
+puts objects.print_assets
+puts objects.print_liabilities
 
 exit = false
 

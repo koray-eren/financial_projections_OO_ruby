@@ -65,8 +65,18 @@ describe "future value method" do
     end
 
     it "should index the starting value of the asset by CPI if first_year is not year 1" do
-        @asset = Asset.new(name, value, 2, growth_rate, income_rate)
-        expect(@asset.future_value(2) ).to eq(value * (1 + Assumptions.indexation) )
+        @asset2 = Asset.new(name, value, 2, growth_rate, income_rate)
+        expect(@asset2.future_value(2) ).to eq(value * (1 + Assumptions.indexation) )
+    end
+
+    it "should return same initial value for first_year = 0 and first_year = 1" do
+        @asset2 = Asset.new(name, value, 1, growth_rate, income_rate)
+        expect(@asset2.future_value(1) ).to eq(@asset.future_value(1) )
+    end
+
+    it "should return same future value for first_year = 0 and first_year = 1" do
+        @asset2 = Asset.new(name, value, 1, growth_rate, income_rate)
+        expect(@asset2.future_value(2) ).to eq(@asset.future_value(2) )
     end
 end
 

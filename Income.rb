@@ -11,4 +11,8 @@ class Income < Cashflow
         @taxable ? future_value(year) : 0
     end
 
+    def to_array
+        [@name, @value, @first_year, @last_year, @taxable]
+    end
+
 end

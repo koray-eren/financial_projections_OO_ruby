@@ -26,4 +26,9 @@ class Liability < Input
     def principal_repayment(year)
         future_value(year) == 0 ? 0 : (future_value(year) > principal_repayments ? principal_repayments : future_value(year) )
     end
+
+    def to_array
+        [@name, @value, @first_year, @interest_rate, @deductible, @principal_repayments]
+    end
+
 end

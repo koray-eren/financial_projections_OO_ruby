@@ -1,6 +1,9 @@
+require_relative("Asset")
+require("tty-table")
+
 class ObjectStorage
     attr_reader :assets
-    
+
     def initialize
         @income = []
         @expenses = []
@@ -11,23 +14,40 @@ class ObjectStorage
     def store(object)
         case object
             when Asset
-                puts "added to assets"
                 @assets.push(object)
             when Liability
-                puts "added to liabilities"
                 @liabilities.push(object)
             when Income
-                puts "added to income"
                 @income.push(object)
             when Expense
-                puts "added to expenses"
                 @expenses.push(object)
             else
                 raise "Stored objects must be asset, liability, income, or expense"
         end
     end
     
-    def getAssets
-        return @assets
+    def print_inputs(array, header)
+        rows = []
+        for item in array do
+            rows << item.to_array
+        end
+        table = TTY::Table.new(header, rows)
+        puts table.render(:unicode, alignment: [:center], padding: [0,1] )
     end
+
+    def print_assets
+        header = ["Name", "Value", "First Year", "Growth Rate", "Income Rate", "Sale Year"]
+        print_inputs(@assets, header)
+    end
+
+    def print_liabilities
+        header = ["Name", "Value", "First Year", "Interest Rate", "Deductible", "Principal Repayments"]
+        print_inputs(@liabilities, header)
+    end
+
+    def print_liabilities
+        header = ["Name", "Value", "First Year", "Interest Rate", "Deductible", "Principal Repayments"]
+        print_inputs(@liabilities, header)
+    end
+
 end

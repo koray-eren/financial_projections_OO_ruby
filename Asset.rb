@@ -26,6 +26,10 @@ class Asset < Input
         future_value(year) * income_rate
     end
     
+    def to_array
+        [@name, @value, @first_year, @growth_rate, @income_rate, @sale_year]
+    end
+
     def to_json
         {   'value' => @value,
             'first_year' => @first_year,

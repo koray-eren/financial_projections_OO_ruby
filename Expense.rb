@@ -11,4 +11,8 @@ class Expense < Cashflow
         @deductible ? future_value(year) : 0
     end
 
+    def to_array
+        [@name, @value, @first_year, @last_year, @deductible]
+    end
+
 end
