@@ -1,13 +1,17 @@
 require("tty-table")
+require("tty-prompt")
 
 class Output
 
     def initialize(objects)
         @objects = objects
+        @prompt = TTY::Prompt.new
     end
 
 
     def print_table(type)
+        system("clear")
+        puts "#{type == "cashflow" ?  "Cashflow" : "Assets & Liabilities"} Table"
         header = ["Item"]
         for i in 1..Assumptions.years do
             header << "Year #{i}"
@@ -18,59 +22,106 @@ class Output
         table = TTY::Table.new(header, rows)
         puts table.render(:unicode, alignment: [:center], padding: [0,1] )
 
-        sleep(5)
-        # TO DO: DISPLAY (AND NAVIGATE/SCROLL?) UNTIL EXIT SPECIFIED - MB JUST EXIT FOR NOW IS FINE
+        @prompt.keypress("Press space or enter to go back", keys: [:space, :return])
     end
 
     def get_asset_liability_rows
-        rows = []
+        rows = [:separator]
+        total_assets_row = ["TOTAL ASSETS"]
+        total_liabilities_row = ["TOTAL LIABILITIES"]
+        net_assets_row = ["NET ASSETS"]
+
+        row = ["ASSETS"]
+        for year in 1..Assumptions.years
+            row << ""
+            total_assets_row << 0
+            total_liabilities_row << 0
+            net_assets_row << 0
+        end
+        rows << row << :separator
         
         for asset in @objects.assets
             row = [asset.name]
             for year in 1..Assumptions.years
-                row << asset.future_value(year).round
+                year_value = asset.future_value(year).round
+                row << year_value
+                total_assets_row[year] += year_value
+                net_assets_row[year] += year_value
+            end
+            rows << row
+        end
+        
+        rows << :separator
+
+        row = ["LIABILITIES"]
+        for year in 1..Assumptions.years
+            row << ""
+        end
+        rows << row << :separator
+
+        for liability in @objects.liabilities
+            row = [liability.name]
+            for year in 1..Assumptions.years
+                year_value = liability.future_value(year).round
+                row << year_value
+                total_liabilities_row[year] += year_value
+                net_assets_row[year] -= year_value
             end
             rows << row
         end
 
-        # ASSETS
-            # asset objects
-        # LIABILITIES
-            # liability objects
-        # SUMMARY
-            # total assets
-            # total loans
-            # PV?
+        rows << :separator << total_assets_row << total_liabilities_row << net_assets_row
+
         return rows
     end
-
     
     def get_cashflow_rows
-        rows = []
-        
-        # for asset in @objects.assets
-        #     row = [asset.name]
-        #     for year in 1..Assumptions.years
-        #         row << asset.future_value(year).round
-        #     end
-        #     p row.length
-        #     rows << row
-        # end
+        rows = [:separator]
+        total_assets_row = ["TOTAL INCOME"]
+        total_liabilities_row = ["TOTAL EXPENSES"]
+        net_assets_row = ["NET CASHFLOW"]
 
-        # INCOMES
-            # income objects
-            # asset incomes
-            # new loans
-        # EXPENSES
-            # expense objects
-            # tax
-            # loan interest
-            # principal repayments
-            # new assets
-        # SUMMARY
-            # total income
-            # total expenses
-            # surplus/deficit
+        row = ["ASSETS"]
+        for year in 1..Assumptions.years
+            row << ""
+            total_assets_row << 0
+            total_liabilities_row << 0
+            net_assets_row << 0
+        end
+        rows << row << :separator
+        
+        for asset in @objects.assets
+            row = [asset.name]
+            for year in 1..Assumptions.years
+                year_value = asset.future_value(year).round
+                row << year_value
+                total_assets_row[year] += year_value
+                net_assets_row[year] += year_value
+            end
+            rows << row
+        end
+        
+        rows << :separator
+
+        row = ["LIABILITIES"]
+        for year in 1..Assumptions.years
+            row << ""
+        end
+        rows << row << :separator
+
+        for liability in @objects.liabilities
+            row = [liability.name]
+            for year in 1..Assumptions.years
+                year_value = liability.future_value(year).round
+                row << year_value
+                total_liabilities_row[year] += year_value
+                net_assets_row[year] -= year_value
+            end
+            rows << row
+        end
+
+        rows << :separator << total_assets_row << total_liabilities_row << net_assets_row
+        
         return rows
     end
     

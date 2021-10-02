@@ -26,7 +26,7 @@ system("clear")
 main_menu_exit = false
 while !main_menu_exit
     system("clear")
-    choices = {"Manage Inputs" => 1, "Cashflow Table" => 2, "Assets & Liabilties Table" => 3, "Exit" => 4}
+    choices = {"Manage Inputs" => 1, "Cashflow Table" => 2, "Assets & Liabilities Table" => 3, "Exit" => 4}
     menu_selection = prompt.select("Welcome! What would you like to do?", choices, cycle: true)
 
     case menu_selection
