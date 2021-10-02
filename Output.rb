@@ -179,7 +179,7 @@ class Output
                 row << year_value
                 total_expenses_row[year] += year_value
                 net_cashflow_row[year] -= year_value
-                taxable_income[year-1] -= year_value
+                liability.deductible ? taxable_income[year-1] -= year_value : nil
             end
             rows << row
         end
