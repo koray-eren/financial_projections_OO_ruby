@@ -8,7 +8,71 @@ require("tty-prompt")
 prompt = TTY::Prompt.new
 objects = ObjectStorage.new
 
-def manage_inputs
+test_asset = Asset.new("test", 100, 0, 0.05, 0.05)
+objects.store(test_asset)
+test_asset2 = Asset.new("test2", 100, 0, 0.05, 0.05)
+objects.store(test_asset2)
+test_loan = Liability.new("loan1", 1000, 1, 0.03)
+objects.store(test_loan)
+test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
+objects.store(test_loan2)
+
+def add_asset(objects)
+    prompt = TTY::Prompt.new
+    name = prompt.ask("Name:", required: true)
+
+    value = prompt.ask("Value:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+    end
+
+    first_year = prompt.slider("First Year (0 = existing):", min: 0, max: Assumptions.years, default: 0)
+
+    growth_rate = prompt.ask("Growth Rate (Decimal: 0.05 = 5% per annum) :") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.default(0.05)
+    end
+
+    income_rate = prompt.ask("Income Rate (Decimal: 0.05 = 5% per annum) :") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.default(0.04)
+    end
+
+    sale_year = prompt.slider("First Year (optional, 0 = none):", min: 0, max: Assumptions.years, default: 0)
+
+    sale_year == 0 ? sale_year = nil : nil
+
+    objects.store(Asset.new(name, value, first_year, growth_rate, income_rate, sale_year) )
+    
+end
+
+def manage_assets(objects)
+    prompt = TTY::Prompt.new
+    puts objects.print_assets
+    choices = [
+        { key: "a", name: "add a new asset", value: :add },
+        { key: "r", name: "remove an asset", value: :remove },
+        { key: "e", name: "edit an asset", value: :edit },
+        { key: "q", name: "quit to previous menu ", value: :quit } ]
+    puts "a - add,  r - remove,  e - edit,  q - quit"
+    selection = prompt.expand("Select an option", choices)
+
+    case selection
+    when :add
+        add_asset(objects)
+    when :remove
+        # select an asset
+        # remove asset process
+        puts "REMOVE"
+        sleep(2)
+    when :edit
+        # select one
+        # edit process (remove + new)
+        puts "EDIT"
+        sleep(2)
+    end
+end
+
+def manage_inputs(objects)
     prompt = TTY::Prompt.new
     input_menu_exit = false
     while !input_menu_exit
@@ -20,13 +84,9 @@ def manage_inputs
 
         case menu_selection
         #EDIT CAN JUST BE ENTER REMOVE + NEW COMBINED - I.E. YOU HAVE TO EDIT THE WHOLE THING, BUT SAVES YOU FROM CLICKING TWO OPTIONS
-        when 1
-            # assets
-            # display all
-            # select: add, remove, (edit), back
-            objects.print_assets
-        when 2
-            # liab
+        when 1 # assets
+            manage_assets(objects)
+        when 2 # liabilities
             # display all
             # select: add, remove, (edit), back
         when 3
@@ -53,7 +113,7 @@ while !main_menu_exit
 
     case menu_selection
     when 1
-        manage_inputs
+        manage_inputs(objects)
     when 2
         # cashflow table
     when 3
@@ -62,23 +122,6 @@ while !main_menu_exit
         main_menu_exit = true
     end
 end
-
-# name, value, first_year, growth_rate, income_rate, sale_year
-# need to add handling for first_year = 0 for inputs
-test_asset = Asset.new("test", 100, 0, 0.05, 0.05)
-objects.store(test_asset)
-
-test_asset2 = Asset.new("test2", 100, 0, 0.05, 0.05)
-objects.store(test_asset2)
-
-# name, value, first_year, interest_rate, deductible = false, principal_repayments = 0
-test_loan = Liability.new("loan1", 1000, 1, 0.03)
-objects.store(test_loan)
-test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
-objects.store(test_loan2)
-puts objects.print_assets
-puts objects.print_liabilities
-puts objects.print_income
 
 exit = false
 
@@ -93,12 +136,11 @@ value = prompt.ask("Value:") do |q|
 end
 
 # add default help: 0 == existing
+puts "TEST"
 first_year = prompt.slider("First Year:", min: 0, max: Assumptions.years, default: 0)
 # change to sale year for asset
 # for loan, start year 0 == existing loan, otherwise will be added to income
 last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
-
-
 
 # file = File.open("assets.json", "w")
 # file.write(test_asset.to_json)
