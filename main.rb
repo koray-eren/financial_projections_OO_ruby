@@ -60,6 +60,20 @@ def remove_asset(objects)
     objects.assets.delete_at(index_to_remove - 1)
 end
 
+def edit_asset(objects)
+    system("clear")
+    puts "Edit Asset\n---------"
+    puts objects.print_assets
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an asset to edit:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.assets.length}")
+        q.convert(:int)
+    end
+    objects.assets.delete_at(index_to_remove - 1)
+    add_asset(objects)
+end
+
 def manage_assets(objects)
     manage_assets_exit = false
     while !manage_assets_exit
@@ -81,10 +95,7 @@ def manage_assets(objects)
         when :remove
             remove_asset(objects)
         when :edit
-            # select one
-            # edit process (remove + new)
-            puts "EDIT"
-            sleep(2)
+            edit_asset(objects)
         when :quit
             manage_assets_exit = true
         end
@@ -97,7 +108,7 @@ def manage_inputs_menu(objects)
     while !input_menu_exit
         system("clear")
         choices = {"Assets" => 1, "Liabilities" => 2, "Income" => 3, "Expenses" => 4, "Back" => 5}
-        menu_selection = prompt.select("Select a category", choices)
+        menu_selection = prompt.select("Select a category", choices, cycle: true)
 
         #ALTERNATIVELY, JUST DISPLAY ALL CURRENT INPUTS, AND THEN CHOOSE TO ADD NEW, EDIT, OR REMOVE
 
@@ -128,7 +139,7 @@ main_menu_exit = false
 while !main_menu_exit
     system("clear")
     choices = {"Manage Inputs" => 1, "Cashflow Table" => 2, "Assets & Liabilties Table" => 3, "Exit" => 4}
-    menu_selection = prompt.select("Welcome! What would you like to do?", choices)
+    menu_selection = prompt.select("Welcome! What would you like to do?", choices, cycle: true)
 
     case menu_selection
     when 1
@@ -142,16 +153,7 @@ while !main_menu_exit
     end
 end
 
-name = prompt.ask("Name:", required: true)
 
-value = prompt.ask("Value:") do |q|
-    q.validate(/\d/, "Invalid value: %{value}, must be a number")
-end
-
-first_year = prompt.slider("First Year:", min: 0, max: Assumptions.years, default: 0)
-# change to sale year for asset
-# for loan, start year 0 == existing loan, otherwise will be added to income
-last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
 
 # file = File.open("assets.json", "w")
 # file.write(test_asset.to_json)
