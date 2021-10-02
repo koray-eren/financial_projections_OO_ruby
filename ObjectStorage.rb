@@ -2,7 +2,7 @@ require_relative("Asset")
 require("tty-table")
 
 class ObjectStorage
-    attr_reader :assets
+    attr_reader :assets, :liabilities, :income, :expenses
 
     def initialize
         @income = []

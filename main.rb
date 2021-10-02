@@ -47,6 +47,37 @@ def add_asset(objects)
     
 end
 
+def add_liability(objects)
+    system("clear")
+    puts "New Liability\n---------"
+    prompt = TTY::Prompt.new
+    name = prompt.ask("Name:", required: true)
+
+    value = prompt.ask("Value:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+    end
+
+    first_year = prompt.slider("First Year (0 = existing):", min: 0, max: Assumptions.years, default: 0)
+
+    interest_rate = prompt.ask("Interest Rate (Decimal: 0.05 = 5% per annum) :") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.default(0.05)
+    end
+
+    deductible = prompt.yes?("Deductible Loan?") do |q|
+        q.default(false)
+    end
+
+    principal_repayments = prompt.ask("Principal Repayments Per Annum (optional):") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.default(0)
+    end
+    
+    # name, value, first_year, interest_rate, deductible = false, principal_repayments
+    objects.store(Liability.new(name, value, first_year, interest_rate, deductible, principal_repayments) )
+    
+end
+
 def remove_asset(objects)
     system("clear")
     puts "Remove Asset\n---------"
@@ -58,6 +89,19 @@ def remove_asset(objects)
         q.convert(:int)
     end
     objects.assets.delete_at(index_to_remove - 1)
+end
+
+def remove_liability(objects)
+    system("clear")
+    puts "Remove Liability\n---------"
+    puts objects.print_liabilities
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select a liability to remove:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.liabilities.length}")
+        q.convert(:int)
+    end
+    objects.liabilities.delete_at(index_to_remove - 1)
 end
 
 def edit_asset(objects)
@@ -72,6 +116,20 @@ def edit_asset(objects)
     end
     objects.assets.delete_at(index_to_remove - 1)
     add_asset(objects)
+end
+
+def edit_liability(objects)
+    system("clear")
+    puts "Edit Liability\n---------"
+    puts objects.print_liabilities
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select a liability to edit:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.liabilities.length}")
+        q.convert(:int)
+    end
+    objects.liabilities.delete_at(index_to_remove - 1)
+    add_liability(objects)
 end
 
 def manage_assets(objects)
@@ -102,6 +160,34 @@ def manage_assets(objects)
     end
 end
 
+def manage_liabilities(objects)
+    manage_liabilities_exit = false
+    while !manage_liabilities_exit
+        prompt = TTY::Prompt.new
+        system("clear")
+        puts objects.print_liabilities
+        choices = [
+            { key: "a", name: "add a new liability", value: :add },
+            { key: "r", name: "remove a liability", value: :remove },
+            { key: "e", name: "edit a liability", value: :edit },
+            { key: "q", name: "quit to previous menu ", value: :quit } ]
+        objects.liabilities.size == 0 ? choices.delete_at(1) : nil
+        puts "a - add,  #{objects.liabilities.size == 0 ? nil : "r - remove,  "}e - edit,  q - quit"
+        selection = prompt.expand("Select an option", choices)
+    
+        case selection
+        when :add
+            add_liability(objects)
+        when :remove
+            remove_liability(objects)
+        when :edit
+            edit_liability(objects)
+        when :quit
+            manage_liabilities_exit = true
+        end
+    end
+end
+
 def manage_inputs_menu(objects)
     prompt = TTY::Prompt.new
     input_menu_exit = false
@@ -110,15 +196,11 @@ def manage_inputs_menu(objects)
         choices = {"Assets" => 1, "Liabilities" => 2, "Income" => 3, "Expenses" => 4, "Back" => 5}
         menu_selection = prompt.select("Select a category", choices, cycle: true)
 
-        #ALTERNATIVELY, JUST DISPLAY ALL CURRENT INPUTS, AND THEN CHOOSE TO ADD NEW, EDIT, OR REMOVE
-
         case menu_selection
-        #EDIT CAN JUST BE ENTER REMOVE + NEW COMBINED - I.E. YOU HAVE TO EDIT THE WHOLE THING, BUT SAVES YOU FROM CLICKING TWO OPTIONS
         when 1 # assets
             manage_assets(objects)
         when 2 # liabilities
-            # display all
-            # select: add, remove, (edit), back
+            manage_liabilities(objects)
         when 3
             # income
             # display all
@@ -132,6 +214,7 @@ def manage_inputs_menu(objects)
         end
     end
 end
+
 
 system("clear")
 
