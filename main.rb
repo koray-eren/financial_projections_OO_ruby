@@ -18,6 +18,8 @@ test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
 objects.store(test_loan2)
 
 def add_asset(objects)
+    system("clear")
+    puts "New Asset\n---------"
     prompt = TTY::Prompt.new
     name = prompt.ask("Name:", required: true)
 
@@ -37,7 +39,7 @@ def add_asset(objects)
         q.default(0.04)
     end
 
-    sale_year = prompt.slider("First Year (optional, 0 = none):", min: 0, max: Assumptions.years, default: 0)
+    sale_year = prompt.slider("Sale Year (optional, 0 = none):", min: 0, max: Assumptions.years, default: 0)
 
     sale_year == 0 ? sale_year = nil : nil
 
@@ -45,34 +47,51 @@ def add_asset(objects)
     
 end
 
-def manage_assets(objects)
-    prompt = TTY::Prompt.new
+def remove_asset(objects)
+    system("clear")
+    puts "Remove Asset\n---------"
     puts objects.print_assets
-    choices = [
-        { key: "a", name: "add a new asset", value: :add },
-        { key: "r", name: "remove an asset", value: :remove },
-        { key: "e", name: "edit an asset", value: :edit },
-        { key: "q", name: "quit to previous menu ", value: :quit } ]
-    puts "a - add,  r - remove,  e - edit,  q - quit"
-    selection = prompt.expand("Select an option", choices)
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an asset to remove:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.assets.length}")
+        q.convert(:int)
+    end
+    objects.assets.delete_at(index_to_remove - 1)
+end
 
-    case selection
-    when :add
-        add_asset(objects)
-    when :remove
-        # select an asset
-        # remove asset process
-        puts "REMOVE"
-        sleep(2)
-    when :edit
-        # select one
-        # edit process (remove + new)
-        puts "EDIT"
-        sleep(2)
+def manage_assets(objects)
+    manage_assets_exit = false
+    while !manage_assets_exit
+        prompt = TTY::Prompt.new
+        system("clear")
+        puts objects.print_assets
+        choices = [
+            { key: "a", name: "add a new asset", value: :add },
+            { key: "r", name: "remove an asset", value: :remove },
+            { key: "e", name: "edit an asset", value: :edit },
+            { key: "q", name: "quit to previous menu ", value: :quit } ]
+        objects.assets.size == 0 ? choices.delete_at(1) : nil
+        puts "a - add,  #{objects.assets.size == 0 ? nil : "r - remove,  "}e - edit,  q - quit"
+        selection = prompt.expand("Select an option", choices)
+    
+        case selection
+        when :add
+            add_asset(objects)
+        when :remove
+            remove_asset(objects)
+        when :edit
+            # select one
+            # edit process (remove + new)
+            puts "EDIT"
+            sleep(2)
+        when :quit
+            manage_assets_exit = true
+        end
     end
 end
 
-def manage_inputs(objects)
+def manage_inputs_menu(objects)
     prompt = TTY::Prompt.new
     input_menu_exit = false
     while !input_menu_exit
@@ -113,7 +132,7 @@ while !main_menu_exit
 
     case menu_selection
     when 1
-        manage_inputs(objects)
+        manage_inputs_menu(objects)
     when 2
         # cashflow table
     when 3
@@ -123,20 +142,12 @@ while !main_menu_exit
     end
 end
 
-exit = false
-
-prompt.on(:keyescape) do |event|
-    exit!
-end
-
 name = prompt.ask("Name:", required: true)
 
 value = prompt.ask("Value:") do |q|
     q.validate(/\d/, "Invalid value: %{value}, must be a number")
 end
 
-# add default help: 0 == existing
-puts "TEST"
 first_year = prompt.slider("First Year:", min: 0, max: Assumptions.years, default: 0)
 # change to sale year for asset
 # for loan, start year 0 == existing loan, otherwise will be added to income
