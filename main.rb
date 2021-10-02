@@ -1,3 +1,4 @@
+require_relative("Output")
 require_relative("Asset")
 require_relative("Liability")
 require_relative("Income")
@@ -9,10 +10,11 @@ require("tty-prompt")
 
 prompt = TTY::Prompt.new
 objects = ObjectStorage.new
+output = Output.new(objects)
 
-test_asset = Asset.new("test", 100, 0, 0.05, 0.05)
+test_asset = Asset.new("asset1", 1000, 0, 0.05, 0.05)
 objects.store(test_asset)
-test_asset2 = Asset.new("test2", 100, 0, 0.05, 0.05)
+test_asset2 = Asset.new("asset2", 1000, 5, 0.05, 0.05)
 objects.store(test_asset2)
 test_loan = Liability.new("loan1", 1000, 1, 0.03)
 objects.store(test_loan)
@@ -31,14 +33,13 @@ while !main_menu_exit
     when 1
         objects.manage_inputs_menu
     when 2
-        # cashflow table
+        output.print_cashflow
     when 3
-        #assets & liabilities table
+        output.print_assets_liabilities
     when 4
         main_menu_exit = true
     end
 end
-
 
 
 # file = File.open("assets.json", "w")

@@ -57,6 +57,7 @@ class ObjectStorage
         print_inputs(@expenses, header)
     end
 
+    
     def add_asset
         system("clear")
         puts "New Asset\n---------"
@@ -65,6 +66,7 @@ class ObjectStorage
     
         value = prompt.ask("Value:") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
+            q.convert(:int)
         end
     
         first_year = prompt.slider("First Year (0 = existing):", min: 0, max: Assumptions.years, default: 0)
@@ -72,14 +74,16 @@ class ObjectStorage
         growth_rate = prompt.ask("Growth Rate (Decimal: 0.05 = 5% per annum) :") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
             q.default(0.05)
+            q.convert(:float)
         end
     
         income_rate = prompt.ask("Income Rate (Decimal: 0.05 = 5% per annum) :") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
             q.default(0.04)
+            q.convert(:float)
         end
     
-        sale_year = prompt.slider("Sale Year (optional, 0 = none):", min: 0, max: Assumptions.years, default: 0)
+        sale_year = prompt.slider("Sale Year (optional, 0 = none):", min: 0, max: Assumptions.years, default: 0, convert: :int)
     
         sale_year == 0 ? sale_year = nil : nil
     
@@ -95,22 +99,26 @@ class ObjectStorage
     
         value = prompt.ask("Value:") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
+            q.convert(:int)
         end
     
-        first_year = prompt.slider("First Year (0 = existing):", min: 0, max: Assumptions.years, default: 0)
+        first_year = prompt.slider("First Year (0 = existing):", min: 0, max: Assumptions.years, default: 0, convert: :int)
     
         interest_rate = prompt.ask("Interest Rate (Decimal: 0.05 = 5% per annum) :") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
             q.default(0.05)
+            q.convert(:float)
         end
     
         deductible = prompt.yes?("Deductible Loan?") do |q|
             q.default(false)
+            q.convert(:boolean)
         end
     
         principal_repayments = prompt.ask("Principal Repayments Per Annum (optional):") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
             q.default(0)
+            q.convert(:int)
         end
         
         store(Liability.new(name, value, first_year, interest_rate, deductible, principal_repayments) )
@@ -125,11 +133,12 @@ class ObjectStorage
     
         value = prompt.ask("Value:") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
+            q.convert(:int)
         end
     
-        first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
-        last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
-        taxable = prompt.yes?("Taxable Income?", default: true)   
+        first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1, convert: :int)
+        last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years, convert: :int)
+        taxable = prompt.yes?("Taxable Income?", default: true, convert: :boolean)   
          
         store(Income.new(name, value, first_year, last_year, taxable) )
         
@@ -143,14 +152,15 @@ class ObjectStorage
     
         value = prompt.ask("Value:") do |q|
             q.validate(/\d/, "Invalid value: %{value}, must be a number")
+            q.convert(:int)
         end
     
-        first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
-        last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
-        deductible = prompt.yes?("Deductible Expense?", default: false)
+        first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1, convert: :int)
+        last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years, convert: :int)
+        deductible = prompt.yes?("Deductible Expense?", default: false, convert: :boolean)
          
         store(Expense.new(name, value, first_year, last_year, deductible) )
-    end    
+    end
 
 
     def remove_asset
