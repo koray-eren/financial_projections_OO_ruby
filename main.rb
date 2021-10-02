@@ -13,13 +13,26 @@ objects = ObjectStorage.new
 output = Output.new(objects)
 
 test_asset = Asset.new("asset1", 1000, 0, 0.05, 0.05)
-objects.store(test_asset)
 test_asset2 = Asset.new("asset2", 1000, 5, 0.05, 0.05)
+objects.store(test_asset)
 objects.store(test_asset2)
+
 test_loan = Liability.new("loan1", 1000, 1, 0.03)
-objects.store(test_loan)
 test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
+test_loan3 = Liability.new("loan3", 500, 5, 0.03)
+objects.store(test_loan)
 objects.store(test_loan2)
+objects.store(test_loan3)
+
+income1 = Income.new("income 1", 4000, 0, 10, true)
+income2 = Income.new("income 2", 2000, 4, 8, false)
+objects.store(income1)
+objects.store(income2)
+
+expense1 = Expense.new("expense 1", 1000, 0, 10, true)
+expense2 = Expense.new("expense 2", 3000, 2, 9, false)
+objects.store(expense1)
+objects.store(expense2)
 
 system("clear")
 

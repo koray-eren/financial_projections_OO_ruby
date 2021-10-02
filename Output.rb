@@ -8,7 +8,6 @@ class Output
         @prompt = TTY::Prompt.new
     end
 
-
     def print_table(type)
         system("clear")
         puts "#{type == "cashflow" ?  "Cashflow" : "Assets & Liabilities"} Table"
@@ -71,58 +70,144 @@ class Output
         end
 
         rows << :separator << total_assets_row << total_liabilities_row << net_assets_row
-
+        
         return rows
     end
     
     def get_cashflow_rows
         rows = [:separator]
-        total_assets_row = ["TOTAL INCOME"]
-        total_liabilities_row = ["TOTAL EXPENSES"]
-        net_assets_row = ["NET CASHFLOW"]
+        total_income_row = ["TOTAL INCOME"]
+        total_expenses_row = ["TOTAL EXPENSES"]
+        net_cashflow_row = ["NET CASHFLOW"]
+        taxable_income = []
 
-        row = ["ASSETS"]
+        # INCOME SECTION
+
+        # header
+        row = ["INCOME"]
         for year in 1..Assumptions.years
             row << ""
-            total_assets_row << 0
-            total_liabilities_row << 0
-            net_assets_row << 0
+            total_income_row << 0
+            total_expenses_row << 0
+            net_cashflow_row << 0
+            taxable_income << 0
         end
         rows << row << :separator
         
+        # income from income objects
+        for income in @objects.income
+            row = [income.name]
+            for year in 1..Assumptions.years
+                year_value = income.future_value(year).round
+                row << year_value
+                total_income_row[year] += year_value
+                net_cashflow_row[year] += year_value
+                income.taxable ? taxable_income[year-1] += year_value : nil
+            end
+            rows << row
+        end
+
+        # income from assets
         for asset in @objects.assets
-            row = [asset.name]
+            row = ["#{asset.name} income"]
             for year in 1..Assumptions.years
-                year_value = asset.future_value(year).round
+                year_value = asset.year_n_income(year).round
                 row << year_value
-                total_assets_row[year] += year_value
-                net_assets_row[year] += year_value
+                total_income_row[year] += year_value
+                net_cashflow_row[year] += year_value
+                taxable_income[year-1] += year_value
             end
             rows << row
         end
-        
-        rows << :separator
 
-        row = ["LIABILITIES"]
+        # income from new liabilities
+        for liability in @objects.liabilities
+            row = ["#{liability.name}"]
+            if liability.first_year != 0
+                for year in 1..Assumptions.years
+                    year_value = (year == liability.first_year ? liability.future_value(year).round : 0)
+                    row << year_value
+                    total_income_row[year] += year_value
+                    net_cashflow_row[year] += year_value
+                end
+                rows << row
+            end
+        end
+
+        # EXPENSES SECTION
+
+        # header
+        rows << :separator
+        row = ["EXPENSES"]
         for year in 1..Assumptions.years
             row << ""
         end
         rows << row << :separator
 
-        for liability in @objects.liabilities
-            row = [liability.name]
+        # expenses from expense objects
+        for expense in @objects.expenses
+            row = [expense.name]
             for year in 1..Assumptions.years
-                year_value = liability.future_value(year).round
+                year_value = expense.future_value(year).round
                 row << year_value
-                total_liabilities_row[year] += year_value
-                net_assets_row[year] -= year_value
+                total_expenses_row[year] += year_value
+                net_cashflow_row[year] -= year_value
+                expense.deductible ? taxable_income[year-1] -= year_value : nil
             end
             rows << row
         end
 
-        rows << :separator << total_assets_row << total_liabilities_row << net_assets_row
+        # purchase of new assets
+        for asset in @objects.assets
+            row = ["#{asset.name} purchase"]
+            if asset.first_year != 0
+                for year in 1..Assumptions.years
+                    year_value = (year == asset.first_year ? asset.future_value(year).round : 0)
+                    row << year_value
+                    total_expenses_row[year] += year_value
+                    net_cashflow_row[year] -= year_value
+                end
+                rows << row
+            end
+        end
+        
+        # loan interest
+        for liability in @objects.liabilities
+            row = ["#{liability.name} interest"]
+            for year in 1..Assumptions.years
+                year_value = liability.interest_payable(year).round
+                row << year_value
+                total_expenses_row[year] += year_value
+                net_cashflow_row[year] -= year_value
+                taxable_income[year-1] -= year_value
+            end
+            rows << row
+        end
+
+        # principal repayments
+        for liability in @objects.liabilities
+            if liability.principal_repayments != 0
+                row = ["#{liability.name} repayment"]
+                for year in 1..Assumptions.years
+                    year_value = liability.principal_repayment(year).round
+                    row << year_value
+                    total_expenses_row[year] += year_value
+                    net_cashflow_row[year] -= year_value
+                end
+                rows << row
+            end
+        end
+
+        # tax
+        income_tax_row = taxable_income.map {|income| (income * Assumptions.tax_rate).round }
+        income_tax_row.unshift("Income Tax")
+        rows << income_tax_row
+
+        # SUMMARY SECTION
+        rows << :separator << total_income_row << total_expenses_row << net_cashflow_row
         
         return rows
+
     end
     
     def print_cashflow
