@@ -1,5 +1,7 @@
 require_relative("Asset")
 require_relative("Liability")
+require_relative("Income")
+require_relative("Expense")
 require_relative("Assumptions")
 require_relative("ObjectStorage")
 require("json")
@@ -16,6 +18,7 @@ test_loan = Liability.new("loan1", 1000, 1, 0.03)
 objects.store(test_loan)
 test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
 objects.store(test_loan2)
+
 
 def add_asset(objects)
     system("clear")
@@ -73,10 +76,45 @@ def add_liability(objects)
         q.default(0)
     end
     
-    # name, value, first_year, interest_rate, deductible = false, principal_repayments
     objects.store(Liability.new(name, value, first_year, interest_rate, deductible, principal_repayments) )
     
 end
+
+def add_income(objects)
+    system("clear")
+    puts "New Income\n---------"
+    prompt = TTY::Prompt.new
+    name = prompt.ask("Name:", required: true)
+
+    value = prompt.ask("Value:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+    end
+
+    first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
+    last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
+    taxable = prompt.yes?("Taxable Income?", default: true)   
+     
+    objects.store(Income.new(name, value, first_year, last_year, taxable) )
+    
+end
+
+def add_expense(objects)
+    system("clear")
+    puts "New Expense\n---------"
+    prompt = TTY::Prompt.new
+    name = prompt.ask("Name:", required: true)
+
+    value = prompt.ask("Value:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+    end
+
+    first_year = prompt.slider("First Year:", min: 1, max: Assumptions.years, default: 1)
+    last_year = prompt.slider("Last Year:", min: 1, max: Assumptions.years, default: Assumptions.years)
+    deductible = prompt.yes?("Deductible Expense?", default: false)
+     
+    objects.store(Expense.new(name, value, first_year, last_year, deductible) )
+end
+
 
 def remove_asset(objects)
     system("clear")
@@ -103,6 +141,33 @@ def remove_liability(objects)
     end
     objects.liabilities.delete_at(index_to_remove - 1)
 end
+
+def remove_income(objects)
+    system("clear")
+    puts "Remove Income\n---------"
+    puts objects.print_income
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an income to remove:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.income.length}")
+        q.convert(:int)
+    end
+    objects.income.delete_at(index_to_remove - 1)
+end
+
+def remove_expense(objects)
+    system("clear")
+    puts "Remove Expense\n---------"
+    puts objects.print_expenses
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an expense to remove:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.expenses.length}")
+        q.convert(:int)
+    end
+    objects.expenses.delete_at(index_to_remove - 1)
+end
+
 
 def edit_asset(objects)
     system("clear")
@@ -131,6 +196,35 @@ def edit_liability(objects)
     objects.liabilities.delete_at(index_to_remove - 1)
     add_liability(objects)
 end
+
+def edit_income(objects)
+    system("clear")
+    puts "Edit Income\n---------"
+    puts objects.print_income
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an income to edit:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.income.length}")
+        q.convert(:int)
+    end
+    objects.income.delete_at(index_to_remove - 1)
+    add_income(objects)
+end
+
+def edit_expense(objects)
+    system("clear")
+    puts "Edit Expense\n---------"
+    puts objects.print_expenses
+    prompt = TTY::Prompt.new
+    index_to_remove = prompt.ask("Select an expense to edit:") do |q|
+        q.validate(/\d/, "Invalid value: %{value}, must be a number")
+        q.in("1-#{objects.expenses.length}")
+        q.convert(:int)
+    end
+    objects.expenses.delete_at(index_to_remove - 1)
+    add_expense(objects)
+end
+
 
 def manage_assets(objects)
     manage_assets_exit = false
@@ -188,6 +282,63 @@ def manage_liabilities(objects)
     end
 end
 
+def manage_income(objects)
+    manage_income_exit = false
+    while !manage_income_exit
+        prompt = TTY::Prompt.new
+        system("clear")
+        puts objects.print_income
+        choices = [
+            { key: "a", name: "add a new income", value: :add },
+            { key: "r", name: "remove an income", value: :remove },
+            { key: "e", name: "edit an income", value: :edit },
+            { key: "q", name: "quit to previous menu ", value: :quit } ]
+        objects.income.size == 0 ? choices.delete_at(1) : nil
+        puts "a - add,  #{objects.income.size == 0 ? nil : "r - remove,  "}e - edit,  q - quit"
+        selection = prompt.expand("Select an option", choices)
+    
+        case selection
+        when :add
+            add_income(objects)
+        when :remove
+            remove_income(objects)
+        when :edit
+            edit_income(objects)
+        when :quit
+            manage_income_exit = true
+        end
+    end
+end
+
+def manage_expenses(objects)
+    manage_expenses_exit = false
+    while !manage_expenses_exit
+        prompt = TTY::Prompt.new
+        system("clear")
+        puts objects.print_expenses
+        choices = [
+            { key: "a", name: "add a new expense", value: :add },
+            { key: "r", name: "remove an expense", value: :remove },
+            { key: "e", name: "edit an expense", value: :edit },
+            { key: "q", name: "quit to previous menu ", value: :quit } ]
+        objects.expenses.size == 0 ? choices.delete_at(1) : nil
+        puts "a - add,  #{objects.expenses.size == 0 ? nil : "r - remove,  "}e - edit,  q - quit"
+        selection = prompt.expand("Select an option", choices)
+    
+        case selection
+        when :add
+            add_expense(objects)
+        when :remove
+            remove_expense(objects)
+        when :edit
+            edit_expense(objects)
+        when :quit
+            manage_expenses_exit = true
+        end
+    end
+end
+
+
 def manage_inputs_menu(objects)
     prompt = TTY::Prompt.new
     input_menu_exit = false
@@ -201,14 +352,10 @@ def manage_inputs_menu(objects)
             manage_assets(objects)
         when 2 # liabilities
             manage_liabilities(objects)
-        when 3
-            # income
-            # display all
-            # select: add, remove, (edit), back
-        when 4
-            # expense
-            # display all
-            # select: add, remove, (edit), back
+        when 3 # income
+            manage_income(objects)
+        when 4 # expense
+            manage_expenses(objects)
         when 5
             input_menu_exit = true
         end
