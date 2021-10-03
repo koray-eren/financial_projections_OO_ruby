@@ -1,4 +1,4 @@
-# financial_projections_terminal_T1A3
+# T1A3 - Financial Projections Terminal App - Koray Eren
 
 ## Installation
 
@@ -6,10 +6,11 @@
    * <https://www.ruby-lang.org/en/documentation/installation/>
 2. Download Repository
    * <https://github.com/koray-eren/financial_projections_terminal_T1A3>
-3. Open the dowloaded repository folder in terminal / cmd
-4. Install bundler ????
-5. Run `bundle install`
-6. Start the app by running `main.rb` or `run_app.sh` in the downloaded folder
+3. Open the dowloaded repository folder in terminal
+4. Install bundler gem
+   * `gem install bundler`
+5. Run `bundle install` in the repo folder (installs dependencies)
+6. Start the app by running `main.rb` or `run_app.sh` in the repo folder
    * `ruby main.rb` OR
      * By default the app will save and load from the directory 'scenario1' inside the repo folder. If running the app via ruby, you may provide an alternative directory name to load from and save to.
        * `ruby main.rb new_folder` will use new_folder as the save and load point within the repo directory, and create it if it does not exist.
@@ -24,7 +25,10 @@
 
 ### System/Hardware Requirements
 
-* Mac? Win? Linux?
+* Compatible with Mac OS / Linux / Windows
+* Tested and working on Raspberry Pi 2 Model B
+  * 1GB RAM
+  * 900MHz quad-core ARM Cortex-A7 CPU
 
 ## Github Repository
 
