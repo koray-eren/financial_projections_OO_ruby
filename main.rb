@@ -7,6 +7,7 @@ require_relative("Assumptions")
 require_relative("ObjectStorage")
 require("json")
 require("tty-prompt")
+require("colorize")
 
 prompt = TTY::Prompt.new
 objects = ObjectStorage.new
@@ -54,10 +55,11 @@ while !main_menu_exit
     end
 end
 
+# INLCUDE ERROR HANDLING FOR JSON PART
 
-# file = File.open("assets.json", "w")
-# file.write(test_asset.to_json)
-# file.close
+# R19: BASH SCRIPT OR PACKAGE FOR USE AS A MODULE OR DEPENDENCY
+
+objects.save_all_inputs_to_json
 
 # file = File.read("assets.json")
 # testAsset2 = Asset.from_json(file)

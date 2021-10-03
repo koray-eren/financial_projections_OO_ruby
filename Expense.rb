@@ -15,4 +15,12 @@ class Expense < Cashflow
         [@name, @value, @first_year, @last_year, @deductible]
     end
 
+    def to_hash
+        {   'name' => @name,
+            'value' => @value,
+            'first_year' => @first_year,
+            'last_year' => @last_year,
+            'deductible' => @deductible }
+    end
+
 end

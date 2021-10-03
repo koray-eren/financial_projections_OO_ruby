@@ -31,4 +31,13 @@ class Liability < Input
         [@name, @value, @first_year, @interest_rate, @deductible, @principal_repayments]
     end
 
+    def to_hash
+        {   'name' => @name,
+            'value' => @value,
+            'first_year' => @first_year,
+            'interest_rate' => @interest_rate,
+            'deductible' => @deductible,
+            'principal_repayments' => @principal_repayments }
+    end
+
 end

@@ -1,5 +1,6 @@
 require_relative("Asset")
 require("tty-table")
+require("json")
 
 class ObjectStorage
     attr_reader :assets, :liabilities, :income, :expenses
@@ -57,7 +58,7 @@ class ObjectStorage
         print_inputs(@expenses, header)
     end
 
-    
+
     def add_asset
         system("clear")
         puts "New Asset\n---------"
@@ -411,5 +412,22 @@ class ObjectStorage
             end
         end
     end
-    
+
+
+    def convert_input_class_to_json(filename, array)
+        file = File.open("#{filename}.json", "w")
+        data = []
+        for input in array do
+            data << input.to_hash
+        end
+        file.write(data.to_json)
+        file.close
+    end
+        
+    def save_all_inputs_to_json
+        convert_input_class_to_json("assets", @assets)
+        convert_input_class_to_json("liabilities", @liabilities)
+        convert_input_class_to_json("income", @income)
+        convert_input_class_to_json("expenses", @expenses)
+    end
 end

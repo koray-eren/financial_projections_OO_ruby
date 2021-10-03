@@ -30,12 +30,13 @@ class Asset < Input
         [@name, @value, @first_year, @growth_rate, @income_rate, @sale_year]
     end
 
-    def to_json
-        {   'value' => @value,
+    def to_hash
+        {   'name' => @name,
+            'value' => @value,
             'first_year' => @first_year,
-            'last_year' => @last_year,
             'growth_rate' => @growth_rate,
-            'income_rate' => @income_rate }.to_json
+            'income_rate' => @income_rate,
+            'sale_year' => @sale_year }
     end
 
     def self.from_json(json_file_path)

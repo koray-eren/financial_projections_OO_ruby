@@ -15,4 +15,12 @@ class Income < Cashflow
         [@name, @value, @first_year, @last_year, @taxable]
     end
 
+    def to_hash
+        {   'name' => @name,
+            'value' => @value,
+            'first_year' => @first_year,
+            'last_year' => @last_year,
+            'taxable' => @taxable }
+    end
+
 end
