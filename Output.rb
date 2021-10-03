@@ -19,7 +19,7 @@ class Output
         rows = (type == "cashflow" ?  get_cashflow_rows : get_asset_liability_rows)
 
         table = TTY::Table.new(header, rows)
-        puts table.render(:unicode, alignment: [:center], padding: [0,1] )
+        puts table.render(:unicode, alignment: [:center], padding: [0,1], resize: true )
 
         @prompt.keypress("Press space or enter to go back", keys: [:space, :return])
     end
@@ -120,6 +120,21 @@ class Output
             rows << row
         end
 
+        # income from asset sales
+        for asset in @objects.assets
+            if asset.sale_year != nil
+                row = ["#{asset.name} sale"]
+                for year in 1..Assumptions.years
+                    year_value = (year == asset.sale_year ? (asset.future_value(year - 1) * (1 + asset.growth_rate) ).round : 0)
+                    row << year_value
+                    total_income_row[year] += year_value
+                    net_cashflow_row[year] += year_value
+                    taxable_income[year-1] += year_value
+                end
+                rows << row
+            end
+        end
+
         # income from new liabilities
         for liability in @objects.liabilities
             row = ["#{liability.name}"]
@@ -202,6 +217,11 @@ class Output
         income_tax_row = taxable_income.map {|income| (income * Assumptions.tax_rate).round }
         income_tax_row.unshift("Income Tax")
         rows << income_tax_row
+
+        for year in 1..Assumptions.years do
+            total_expenses_row[year] += income_tax_row[year]
+            net_cashflow_row[year] -= income_tax_row[year]
+        end
 
         # SUMMARY SECTION
         rows << :separator << total_income_row << total_expenses_row << net_cashflow_row

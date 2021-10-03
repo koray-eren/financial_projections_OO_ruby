@@ -8,34 +8,22 @@ require_relative("ObjectStorage")
 require("json")
 require("tty-prompt")
 require("colorize")
+require("fileutils")
 
 prompt = TTY::Prompt.new
 objects = ObjectStorage.new
 output = Output.new(objects)
 
-# test_asset = Asset.new("asset1", 1000, 0, 0.05, 0.05)
-# test_asset2 = Asset.new("asset2", 1000, 5, 0.05, 0.05)
-# objects.store(test_asset)
-# objects.store(test_asset2)
+intialization_parameters = ARGV
+scenario_name = (ARGV.length == 0 ? "scenario1" : ARGV[0].to_s)
+puts ARGV[0].to_s
 
-# test_loan = Liability.new("loan1", 1000, 1, 0.03)
-# test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
-# test_loan3 = Liability.new("loan3", 500, 5, 0.03)
-# objects.store(test_loan)
-# objects.store(test_loan2)
-# objects.store(test_loan3)
-
-# income1 = Income.new("income 1", 4000, 0, 10, true)
-# income2 = Income.new("income 2", 2000, 4, 8, false)
-# objects.store(income1)
-# objects.store(income2)
-
-# expense1 = Expense.new("expense 1", 1000, 0, 10, true)
-# expense2 = Expense.new("expense 2", 3000, 2, 9, false)
-# objects.store(expense1)
-# objects.store(expense2)
-
-objects.load_all_inputs_from_json("./scenario1")
+File.directory?("./#{scenario_name}") ? nil : FileUtils.mkdir("./#{scenario_name}")
+begin
+    objects.load_all_inputs_from_json("./#{scenario_name}")
+rescue => exception
+    prompt.keypress("Scenario not found, creating new scenario #{scenario_name}. Press space or return to continue.", keys: [:space, :return])
+end
 
 system("clear")
 
@@ -61,9 +49,9 @@ end
 
 # R19: BASH SCRIPT OR PACKAGE FOR USE AS A MODULE OR DEPENDENCY
 
-scenario_name = prompt.yes?("Save your inputs?") ? prompt.ask("Scenario name: ", default: "scenario1") : nil
-scenario_name != nil ? objects.save_all_inputs_to_json("./#{scenario_name}") : nil
-# prompt.yes?("Save your inputs?") ? objects.save_all_inputs_to_json("./scenario1") : nil
+# scenario_name = prompt.yes?("Save your inputs?") ? prompt.ask("Scenario name: ", default: "scenario1") : nil
+# scenario_name != nil ? objects.save_all_inputs_to_json("./#{scenario_name}") : nil
+prompt.yes?("Save your inputs?") ? objects.save_all_inputs_to_json("./#{scenario_name}") : nil
 
 # file = File.read("assets.json")
 # testAsset2 = Asset.from_json(file)
