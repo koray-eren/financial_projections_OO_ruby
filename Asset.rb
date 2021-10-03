@@ -39,8 +39,8 @@ class Asset < Input
             'sale_year' => @sale_year }
     end
 
-    def self.from_json(hash)
-        self.new(hash['value'], hash['first_year'], hash['last_year'], hash['growth_rate'], hash['income_rate'] )
+    def self.from_hash(hash)
+        self.new(hash['name'], hash['value'], hash['first_year'], hash['growth_rate'], hash['income_rate'], hash['sale_year'] )
     end
 
 end

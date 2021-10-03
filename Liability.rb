@@ -40,4 +40,8 @@ class Liability < Input
             'principal_repayments' => @principal_repayments }
     end
 
+    def self.from_hash(hash)
+        self.new(hash['name'], hash['value'], hash['first_year'], hash['interest_rate'], hash['deductible'], hash['principal_repayments'] )
+    end
+
 end

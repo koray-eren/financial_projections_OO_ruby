@@ -23,4 +23,8 @@ class Income < Cashflow
             'taxable' => @taxable }
     end
 
+    def self.from_hash(hash)
+        self.new(hash['name'], hash['value'], hash['first_year'], hash['last_year'], hash['taxable'] )
+    end
+
 end

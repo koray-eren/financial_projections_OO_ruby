@@ -13,27 +13,29 @@ prompt = TTY::Prompt.new
 objects = ObjectStorage.new
 output = Output.new(objects)
 
-test_asset = Asset.new("asset1", 1000, 0, 0.05, 0.05)
-test_asset2 = Asset.new("asset2", 1000, 5, 0.05, 0.05)
-objects.store(test_asset)
-objects.store(test_asset2)
+# test_asset = Asset.new("asset1", 1000, 0, 0.05, 0.05)
+# test_asset2 = Asset.new("asset2", 1000, 5, 0.05, 0.05)
+# objects.store(test_asset)
+# objects.store(test_asset2)
 
-test_loan = Liability.new("loan1", 1000, 1, 0.03)
-test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
-test_loan3 = Liability.new("loan3", 500, 5, 0.03)
-objects.store(test_loan)
-objects.store(test_loan2)
-objects.store(test_loan3)
+# test_loan = Liability.new("loan1", 1000, 1, 0.03)
+# test_loan2 = Liability.new("loan2", 1000, 0, 0.03)
+# test_loan3 = Liability.new("loan3", 500, 5, 0.03)
+# objects.store(test_loan)
+# objects.store(test_loan2)
+# objects.store(test_loan3)
 
-income1 = Income.new("income 1", 4000, 0, 10, true)
-income2 = Income.new("income 2", 2000, 4, 8, false)
-objects.store(income1)
-objects.store(income2)
+# income1 = Income.new("income 1", 4000, 0, 10, true)
+# income2 = Income.new("income 2", 2000, 4, 8, false)
+# objects.store(income1)
+# objects.store(income2)
 
-expense1 = Expense.new("expense 1", 1000, 0, 10, true)
-expense2 = Expense.new("expense 2", 3000, 2, 9, false)
-objects.store(expense1)
-objects.store(expense2)
+# expense1 = Expense.new("expense 1", 1000, 0, 10, true)
+# expense2 = Expense.new("expense 2", 3000, 2, 9, false)
+# objects.store(expense1)
+# objects.store(expense2)
+
+objects.load_all_inputs_from_json("./scenario1")
 
 system("clear")
 
@@ -59,7 +61,9 @@ end
 
 # R19: BASH SCRIPT OR PACKAGE FOR USE AS A MODULE OR DEPENDENCY
 
-objects.save_all_inputs_to_json("./scenario1")
+scenario_name = prompt.yes?("Save your inputs?") ? prompt.ask("Scenario name: ", default: "scenario1") : nil
+scenario_name != nil ? objects.save_all_inputs_to_json("./#{scenario_name}") : nil
+# prompt.yes?("Save your inputs?") ? objects.save_all_inputs_to_json("./scenario1") : nil
 
 # file = File.read("assets.json")
 # testAsset2 = Asset.from_json(file)

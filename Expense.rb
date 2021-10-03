@@ -23,4 +23,8 @@ class Expense < Cashflow
             'deductible' => @deductible }
     end
 
+    def self.from_hash(hash)
+        self.new(hash['name'], hash['value'], hash['first_year'], hash['last_year'], hash['deductible'] )
+    end
+
 end

@@ -432,10 +432,19 @@ class ObjectStorage
     end
 
     def load_all_inputs_from_json(folder_path)
-        
+        load_input_class_from_json(folder_path, "assets", Asset)
+        load_input_class_from_json(folder_path, "liabilities", Liability)
+        load_input_class_from_json(folder_path, "income", Income)
+        load_input_class_from_json(folder_path, "expenses", Expense)
     end
 
-    def load_input_class_from_json()
-        hash = JSON.parse(json_file_path)
+    def load_input_class_from_json(folder_path, filename, input_class)
+        file = File.read("#{folder_path}/#{filename}.json")
+        array = JSON.parse(file)
+        p array
+        for input in array do
+            store(input_class.from_hash(input) )
+        end
     end
+
 end
