@@ -7,7 +7,6 @@ require_relative("Assumptions")
 require_relative("ObjectStorage")
 require("json")
 require("tty-prompt")
-require("colorize")
 require("fileutils")
 
 prompt = TTY::Prompt.new
