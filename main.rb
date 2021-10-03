@@ -59,7 +59,7 @@ end
 
 # R19: BASH SCRIPT OR PACKAGE FOR USE AS A MODULE OR DEPENDENCY
 
-objects.save_all_inputs_to_json
+objects.save_all_inputs_to_json("./scenario1")
 
 # file = File.read("assets.json")
 # testAsset2 = Asset.from_json(file)

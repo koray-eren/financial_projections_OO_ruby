@@ -39,8 +39,7 @@ class Asset < Input
             'sale_year' => @sale_year }
     end
 
-    def self.from_json(json_file_path)
-        hash = JSON.parse(json_file_path)
+    def self.from_json(hash)
         self.new(hash['value'], hash['first_year'], hash['last_year'], hash['growth_rate'], hash['income_rate'] )
     end
 

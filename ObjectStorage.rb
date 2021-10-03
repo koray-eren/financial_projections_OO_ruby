@@ -414,8 +414,8 @@ class ObjectStorage
     end
 
 
-    def convert_input_class_to_json(filename, array)
-        file = File.open("#{filename}.json", "w")
+    def convert_input_class_to_json(folder_path, filename, array)
+        file = File.open("#{folder_path}/#{filename}.json", "w")
         data = []
         for input in array do
             data << input.to_hash
@@ -424,10 +424,18 @@ class ObjectStorage
         file.close
     end
         
-    def save_all_inputs_to_json
-        convert_input_class_to_json("assets", @assets)
-        convert_input_class_to_json("liabilities", @liabilities)
-        convert_input_class_to_json("income", @income)
-        convert_input_class_to_json("expenses", @expenses)
+    def save_all_inputs_to_json(folder_path)
+        convert_input_class_to_json(folder_path, "assets", @assets)
+        convert_input_class_to_json(folder_path, "liabilities", @liabilities)
+        convert_input_class_to_json(folder_path, "income", @income)
+        convert_input_class_to_json(folder_path, "expenses", @expenses)
+    end
+
+    def load_all_inputs_from_json(folder_path)
+        
+    end
+
+    def load_input_class_from_json()
+        hash = JSON.parse(json_file_path)
     end
 end
